@@ -551,9 +551,19 @@
                     <label for="userMemo" class="block text-sm font-bold text-gray-700">요청 및 메모사항</label>
                     <textarea id="userMemo" name="userMemo" rows="2" placeholder="배송 전 연락주세요 등" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold text-lg py-4 rounded-lg hover:bg-blue-700 transition-all shadow-md mt-2">
-                    주문 접수하기
+                 <!-- 비활성화된 기존 버튼 및 제휴 링크 안내 -->
+                <button type="button" disabled class="w-full bg-gray-300 text-gray-500 font-bold text-lg py-4 rounded-lg cursor-not-allowed mt-2">
+                    주문 접수하기 (일시 중지)
                 </button>
+                
+                <div class="bg-red-50 p-4 rounded-lg border border-red-100 mt-4 text-center">
+                    <p class="text-sm text-red-600 font-bold mb-3">
+                        ⚠️ 현재 주문 작성 시스템 점검 중입니다.<br>제휴 사이트(ssw33.xyz)를 통해 주문해 주세요.
+                    </p>
+                    <a href="https://ssw33.xyz" target="_blank" rel="noopener noreferrer" class="block w-full bg-blue-600 text-white text-center font-bold text-lg py-3 rounded-lg hover:bg-blue-700 transition-all shadow-sm">
+                        ssw33.xyz 바로가기
+                    </a>
+                </div>
             </form>
         </div>
     </div>
