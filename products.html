@@ -567,7 +567,7 @@
                     주문 접수하기 (일시 중지)
                 </button>
                 
-<!-- [수정된 주문 시스템 점검 안내 박스] -->
+<!-- [주문 점검 안내 박스 (실시간 상담 + 카톡 ID 복사)] -->
 <div class="bg-red-50 p-5 rounded-2xl border border-red-200 text-center shadow-sm mt-4">
     <!-- 안내 메시지 -->
     <p class="text-base text-red-600 font-bold mb-1.5 flex items-center justify-center gap-1">
@@ -577,26 +577,51 @@
         사이트의 <strong class="text-indigo-600 font-bold">실시간 상담</strong> 혹은 카톡 아이디 <strong class="text-amber-900 font-bold bg-amber-200/70 px-1.5 py-0.5 rounded">haru5432</strong> 로 문의주세요.
     </p>
     
-    <!-- 카톡 ID 복사 버튼 -->
-    <div class="flex justify-center">
-        <button type="button" onclick="copyNoticeKakaoId(this)" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#FEE500] hover:bg-[#FDD800] text-[#191919] font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer border-none">
+    <!-- 버튼 2개 나란히 배치 (모바일은 위아래, PC는 좌우) -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5">
+        <!-- 1. 실시간 상담 버튼 (채널톡 오픈) -->
+        <button 
+            type="button" 
+            onclick="openChannelTalk()" 
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-5 py-3 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer border-none"
+        >
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M12 3C6.48 3 2 6.94 2 11.8c0 2.76 1.44 5.23 3.7 6.78-.17 1.25-.76 2.87-1.8 3.82-.24.22-.09.62.24.59 2.45-.2 4.62-1.28 5.86-2.19.64.13 1.31.2 2 .2 5.52 0 10-3.94 10-8.8S17.52 3 12 3zm-2.5 9.8c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+            </svg>
+            <span>실시간 상담 문의</span>
+        </button>
+
+        <!-- 2. 카톡 ID 복사 버튼 -->
+        <button 
+            type="button" 
+            onclick="copyNoticeKakaoId(this)" 
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#FEE500] hover:bg-[#FDD800] text-[#191919] font-bold text-sm px-5 py-3 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer border-none"
+        >
             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path d="M12 3C6.48 3 2 6.58 2 11c0 2.82 1.83 5.3 4.62 6.64l-.94 3.49c-.08.31.25.57.53.41l4.16-2.43c.53.07 1.07.1 1.63.1 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
             </svg>
-            <span class="notice-btn-text">카톡 ID (haru5432) 복사하기</span>
+            <span class="notice-btn-text">카톡 ID (haru5432) 복사</span>
         </button>
     </div>
 </div>
 
-<!-- 복사 스크립트 (페이지 하단에 위치) -->
+<!-- 스크립트 (점검 박스 아래 또는 페이지 하단에 추가) -->
 <script>
+// 채널톡 열기
+function openChannelTalk() {
+    if (window.ChannelIO) {
+        window.ChannelIO('showMessenger');
+    }
+}
+
+// 카카오톡 ID 복사
 function copyNoticeKakaoId(btn) {
     var kakaoId = 'haru5432';
     var textSpan = btn.querySelector('.notice-btn-text');
-    var originalText = textSpan ? textSpan.innerText : '카톡 ID (haru5432) 복사하기';
+    var originalText = textSpan ? textSpan.innerText : '카톡 ID (haru5432) 복사';
 
     function onSuccess() {
-        if (textSpan) textSpan.innerText = '✓ 카톡 ID 복사 완료!';
+        if (textSpan) textSpan.innerText = '✓ 복사 완료!';
         btn.classList.remove('bg-[#FEE500]', 'hover:bg-[#FDD800]', 'text-[#191919]');
         btn.classList.add('bg-emerald-500', 'text-white');
 
@@ -629,7 +654,6 @@ function fallbackCopy(text, callback) {
     if (callback) callback();
 }
 </script>
-
             </form>
         </div>
     </div>
