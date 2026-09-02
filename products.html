@@ -511,122 +511,7 @@
         </div>
     </footer>
 
-<!-- 카카오톡 복사 버튼 스타일 -->
-<style>
-  /* 카카오톡 플로팅 버튼 */
-  .kakao-floating-btn {
-    position: fixed;
-    right: 26px;            /* 채널톡 버튼(가로 60px 기준)과 가운데 정렬 */
-    bottom: 115px;          /* 채널톡과 겹치지 않도록 높이 상향 (조절 가능) */
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background-color: #FEE500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 99999;         /* 채널톡보다 항상 위 또는 명확히 보이도록 설정 */
-    border: none;
-    outline: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .kakao-floating-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  }
-  .kakao-floating-btn svg {
-    width: 28px;
-    height: 28px;
-    fill: #191919;
-  }
 
-  /* 복사 완료 알림 툴팁 (버튼 바로 위 표시) */
-  .kakao-copy-toast {
-    position: fixed;
-    right: 24px;
-    bottom: 180px;          /* 버튼 위치에 맞춰 상향 조정 */
-    background-color: rgba(25, 25, 25, 0.9);
-    color: #fff;
-    padding: 9px 15px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 100000;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(8px);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-  }
-  .kakao-copy-toast.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* 모바일 화면 대응 (선택 사항: 모바일에서 채널톡 위치가 달라질 때) */
-  @media (max-width: 768px) {
-    .kakao-floating-btn {
-      right: 20px;
-      bottom: 105px;
-      width: 50px;
-      height: 50px;
-    }
-    .kakao-copy-toast {
-      right: 20px;
-      bottom: 165px;
-    }
-  }
-</style>
-
-<!-- 카카오톡 복사 버튼 HTML -->
-<button type="button" class="kakao-floating-btn" id="kakaoCopyBtn" title="카톡 ID 복사">
-  <svg viewBox="0 0 24 24">
-    <path d="M12 3C6.48 3 2 6.58 2 11c0 2.82 1.83 5.3 4.62 6.64l-.94 3.49c-.08.31.25.57.53.41l4.16-2.43c.53.07 1.07.1 1.63.1 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
-  </svg>
-</button>
-<div id="kakaoToast" class="kakao-copy-toast">카톡 ID(haru5432)가 복사되었습니다!</div>
-
-<!-- 클립보드 복사 스크립트 -->
-<script>
-  (function() {
-    var kakaoId = 'haru5432';
-    var copyBtn = document.getElementById('kakaoCopyBtn');
-    var toast = document.getElementById('kakaoToast');
-    var toastTimer;
-
-    function showToast() {
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(function() {
-        toast.classList.remove('show');
-      }, 2000);
-    }
-
-    copyBtn.addEventListener('click', function() {
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(kakaoId).then(showToast);
-      } else {
-        var textArea = document.createElement("textarea");
-        textArea.value = kakaoId;
-        textArea.style.position = "fixed";
-        textArea.style.left = "-999999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-          document.execCommand('copy');
-          showToast();
-        } catch (e) {
-          alert('카톡 ID: ' + kakaoId);
-        }
-        textArea.remove();
-      }
-    });
-  })();
-</script>
 
 <!-- 채널톡 스크립트 -->
 <script>
@@ -682,14 +567,69 @@
                     주문 접수하기 (일시 중지)
                 </button>
                 
-                <div class="bg-red-50 p-4 rounded-lg border border-red-100 mt-4 text-center">
-                    <p class="text-sm text-red-600 font-bold mb-3">
-                        ⚠️ 현재 주문 작성 시스템 점검 중입니다.<br>제휴 사이트(fbyak3.xyz)를 통해 주문해 주세요.
-                    </p>
-                    <a href="https://fbyak3.xyz" target="_blank" rel="noopener noreferrer" class="block w-full bg-blue-600 text-white text-center font-bold text-lg py-3 rounded-lg hover:bg-blue-700 transition-all shadow-sm">
-                         바로가기
-                    </a>
-                </div>
+<!-- [수정된 주문 시스템 점검 안내 박스] -->
+<div class="bg-red-50 p-5 rounded-2xl border border-red-200 text-center shadow-sm mt-4">
+    <!-- 안내 메시지 -->
+    <p class="text-base text-red-600 font-bold mb-1.5 flex items-center justify-center gap-1">
+        <span>⚠️</span> 현재 주문 작성 시스템 점검 중입니다.
+    </p>
+    <p class="text-sm text-slate-700 font-medium leading-relaxed mb-4">
+        사이트의 <strong class="text-indigo-600 font-bold">실시간 상담</strong> 혹은 카톡 아이디 <strong class="text-amber-900 font-bold bg-amber-200/70 px-1.5 py-0.5 rounded">haru5432</strong> 로 문의주세요.
+    </p>
+    
+    <!-- 카톡 ID 복사 버튼 -->
+    <div class="flex justify-center">
+        <button type="button" onclick="copyNoticeKakaoId(this)" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#FEE500] hover:bg-[#FDD800] text-[#191919] font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer border-none">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M12 3C6.48 3 2 6.58 2 11c0 2.82 1.83 5.3 4.62 6.64l-.94 3.49c-.08.31.25.57.53.41l4.16-2.43c.53.07 1.07.1 1.63.1 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+            </svg>
+            <span class="notice-btn-text">카톡 ID (haru5432) 복사하기</span>
+        </button>
+    </div>
+</div>
+
+<!-- 복사 스크립트 (페이지 하단에 위치) -->
+<script>
+function copyNoticeKakaoId(btn) {
+    var kakaoId = 'haru5432';
+    var textSpan = btn.querySelector('.notice-btn-text');
+    var originalText = textSpan ? textSpan.innerText : '카톡 ID (haru5432) 복사하기';
+
+    function onSuccess() {
+        if (textSpan) textSpan.innerText = '✓ 카톡 ID 복사 완료!';
+        btn.classList.remove('bg-[#FEE500]', 'hover:bg-[#FDD800]', 'text-[#191919]');
+        btn.classList.add('bg-emerald-500', 'text-white');
+
+        setTimeout(function() {
+            if (textSpan) textSpan.innerText = originalText;
+            btn.classList.remove('bg-emerald-500', 'text-white');
+            btn.classList.add('bg-[#FEE500]', 'hover:bg-[#FDD800]', 'text-[#191919]');
+        }, 2000);
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(kakaoId).then(onSuccess).catch(function() {
+            fallbackCopy(kakaoId, onSuccess);
+        });
+    } else {
+        fallbackCopy(kakaoId, onSuccess);
+    }
+}
+
+function fallbackCopy(text, callback) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(textArea);
+    if (callback) callback();
+}
+</script>
+
             </form>
         </div>
     </div>
