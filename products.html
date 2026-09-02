@@ -511,6 +511,118 @@
         </div>
     </footer>
 
+<!-- 카카오톡 복사 버튼 스타일 -->
+<style>
+  /* 카카오톡 플로팅 버튼 */
+  .kakao-floating-btn {
+    position: fixed;
+    right: 24px;
+    bottom: 96px; /* 채널톡 기본 버튼(24px + 크기 60px + 간격) 바로 위 */
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #FEE500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+    border: none;
+    outline: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .kakao-floating-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+  .kakao-floating-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: #191919;
+  }
+
+  /* 복사 완료 알림 툴팁 (토스트 메시지) */
+  .kakao-copy-toast {
+    position: fixed;
+    right: 24px;
+    bottom: 162px;
+    background-color: rgba(25, 25, 25, 0.9);
+    color: #fff;
+    padding: 9px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .kakao-copy-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<!-- 카카오톡 복사 버튼 HTML -->
+<button type="button" class="kakao-floating-btn" id="kakaoCopyBtn" title="카톡 ID 복사">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 3C6.48 3 2 6.58 2 11c0 2.82 1.83 5.3 4.62 6.64l-.94 3.49c-.08.31.25.57.53.41l4.16-2.43c.53.07 1.07.1 1.63.1 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+  </svg>
+</button>
+<div id="kakaoToast" class="kakao-copy-toast">카톡 ID(haru5432)가 복사되었습니다!</div>
+
+<!-- 클립보드 복사 스크립트 -->
+<script>
+  (function() {
+    var kakaoId = 'haru5432';
+    var copyBtn = document.getElementById('kakaoCopyBtn');
+    var toast = document.getElementById('kakaoToast');
+    var toastTimer;
+
+    function showToast() {
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    copyBtn.addEventListener('click', function() {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(kakaoId).then(showToast);
+      } else {
+        var textArea = document.createElement("textarea");
+        textArea.value = kakaoId;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          showToast();
+        } catch (e) {
+          alert('카톡 ID: ' + kakaoId);
+        }
+        textArea.remove();
+      }
+    });
+  })();
+</script>
+
+<!-- 채널톡 스크립트 -->
+<script>
+  (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+
+  ChannelIO('boot', {
+    "pluginKey": "1cb40581-b6e8-4715-9bb2-7934a6ad432c"
+  });
+</script>
+    
     <!-- 주문 팝업 (모달) -->
     <div id="orderModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-2xl w-full max-w-md p-6 md:p-8 shadow-2xl relative transform transition-all">
