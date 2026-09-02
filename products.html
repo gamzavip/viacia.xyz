@@ -724,5 +724,96 @@
             event.target.reset();
         }
     </script>
+    <!-- [화면 최상단 고정 점검 안내 바] -->
+<div id="topNoticeBar" class="fixed top-0 left-0 w-full bg-red-600 text-white shadow-lg z-[99999] px-4 py-3 border-b-2 border-red-700">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+        <!-- 멘트 영역 -->
+        <div class="flex items-center gap-2">
+            <span class="text-xl animate-bounce">⚠️</span>
+            <p class="text-sm md:text-base font-bold leading-tight">
+                현재 주문 작성 시스템 점검 중입니다. 
+                <span class="text-amber-200 font-medium block md:inline md:ml-1">사이트 실시간 상담 혹은 카톡(haru5432)으로 문의주세요.</span>
+            </p>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="flex items-center gap-2 w-full md:w-auto justify-center">
+            <!-- 1. 실시간 상담 버튼 (채널톡) -->
+            <button 
+                type="button" 
+                onclick="openChannelTalk()" 
+                class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 bg-white text-indigo-600 hover:bg-slate-100 font-bold text-xs md:text-sm px-4 py-2 rounded-lg transition-all shadow-sm active:scale-95 cursor-pointer border-none"
+            >
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 3C6.48 3 2 6.94 2 11.8c0 2.76 1.44 5.23 3.7 6.78-.17 1.25-.76 2.87-1.8 3.82-.24.22-.09.62.24.59 2.45-.2 4.62-1.28 5.86-2.19.64.13 1.31.2 2 .2 5.52 0 10-3.94 10-8.8S17.52 3 12 3zm-2.5 9.8c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                </svg>
+                <span>실시간 상담</span>
+            </button>
+
+            <!-- 2. 카톡 ID 복사 버튼 -->
+            <button 
+                type="button" 
+                onclick="copyNoticeKakaoId(this)" 
+                class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 bg-[#FEE500] hover:bg-[#FDD800] text-[#191919] font-bold text-xs md:text-sm px-4 py-2 rounded-lg transition-all shadow-sm active:scale-95 cursor-pointer border-none"
+            >
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 3C6.48 3 2 6.58 2 11c0 2.82 1.83 5.3 4.62 6.64l-.94 3.49c-.08.31.25.57.53.41l4.16-2.43c.53.07 1.07.1 1.63.1 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+                </svg>
+                <span class="notice-btn-text">카톡 복사</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 상단 바에 본문이 가려지지 않도록 빈 공간 확보 (바 높이에 맞춰 자동 조정) -->
+<div class="h-20 md:h-14"></div>
+<script>
+// 채널톡 열기
+function openChannelTalk() {
+    if (window.ChannelIO) {
+        window.ChannelIO('showMessenger');
+    }
+}
+
+// 카카오톡 ID 복사 및 시각 피드백
+function copyNoticeKakaoId(btn) {
+    var kakaoId = 'haru5432';
+    var textSpan = btn.querySelector('.notice-btn-text');
+    var originalText = textSpan ? textSpan.innerText : '카톡 ID 복사';
+
+    function onSuccess() {
+        if (textSpan) textSpan.innerText = '✓ 복사 완료!';
+        btn.classList.remove('bg-[#FEE500]', 'hover:bg-[#FDD800]', 'text-[#191919]');
+        btn.classList.add('bg-emerald-500', 'text-white');
+
+        setTimeout(function() {
+            if (textSpan) textSpan.innerText = originalText;
+            btn.classList.remove('bg-emerald-500', 'text-white');
+            btn.classList.add('bg-[#FEE500]', 'hover:bg-[#FDD800]', 'text-[#191919]');
+        }, 2000);
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(kakaoId).then(onSuccess).catch(function() {
+            fallbackCopy(kakaoId, onSuccess);
+        });
+    } else {
+        fallbackCopy(kakaoId, onSuccess);
+    }
+}
+
+function fallbackCopy(text, callback) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(textArea);
+    if (callback) callback();
+}
+</script>
 </body>
 </html>
