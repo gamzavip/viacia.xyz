@@ -769,18 +769,16 @@
 </div>
     
 <script>
-// 채널톡 열기
 function openChannelTalk() {
     if (window.ChannelIO) {
         window.ChannelIO('showMessenger');
     }
 }
 
-// 카카오톡 ID 복사 및 시각 피드백
 function copyNoticeKakaoId(btn) {
     var kakaoId = 'haru5432';
     var textSpan = btn.querySelector('.notice-btn-text');
-    var originalText = textSpan ? textSpan.innerText : '카톡 ID 복사';
+    var originalText = textSpan ? textSpan.innerText : '카톡 복사';
 
     function onSuccess() {
         if (textSpan) textSpan.innerText = '✓ 복사 완료!';
