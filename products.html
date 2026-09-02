@@ -725,83 +725,243 @@
         }
     </script>
 
-<!-- [메뉴를 덮지 않는 상단 알림 배너] -->
-<div class="w-full bg-red-600 text-white shadow-md border-b-2 border-red-700 px-4 py-3">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
-        <!-- 안내 멘트 -->
-        <div class="flex items-center gap-2 justify-center md:justify-start">
-            <span class="text-xl">⚠️</span>
-            <p class="text-sm md:text-base font-bold leading-tight">
-                현재 주문 작성 시스템 점검 중입니다.
-                <span class="text-amber-200 font-medium block md:inline md:ml-1">
-                    사이트 실시간 상담 혹은 카톡(haru5432)으로 문의주세요.
-                </span>
-            </p>
-        </div>
+    <!-- ========================================================
+     [화면 하단 고정] 점검 안내 + 실시간 상담 + 카톡 복사 통합 바
+     ======================================================== -->
+<style>
+  /* 하단 고정 바 전체 래퍼 */
+  .fixed-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background-color: #ffffff;
+    border-top: 3px solid #ef4444; /* 상단 레드 강조선 */
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12);
+    z-index: 999999;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
 
-        <!-- 버튼 영역 -->
-        <div class="flex items-center gap-2 w-full md:w-auto justify-center flex-shrink-0">
-            <!-- 1. 실시간 상담 버튼 -->
-            <button 
-                type="button" 
-                onclick="openChannelTalk()" 
-                class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 bg-white text-indigo-600 hover:bg-slate-100 font-bold text-xs md:text-sm px-4 py-2.5 rounded-lg transition shadow-sm active:scale-95 cursor-pointer border-none"
-            >
-                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 3C6.48 3 2 6.94 2 11.8c0 2.76 1.44 5.23 3.7 6.78-.17 1.25-.76 2.87-1.8 3.82-.24.22-.09.62.24.59 2.45-.2 4.62-1.28 5.86-2.19.64.13 1.31.2 2 .2 5.52 0 10-3.94 10-8.8S17.52 3 12 3zm-2.5 9.8c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                </svg>
-                <span>실시간 상담</span>
-            </button>
+  /* 내부 정렬 컨테이너 */
+  .bottom-bar-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
 
-            <!-- 2. 카톡 ID 복사 버튼 -->
-            <button 
-                type="button" 
-                onclick="copyNoticeKakaoId(this)" 
-                class="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 bg-[#FEE500] hover:bg-[#FDD800] text-[#191919] font-bold text-xs md:text-sm px-4 py-2.5 rounded-lg transition shadow-sm active:scale-95 cursor-pointer border-none"
-            >
-                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 3C6.48 3 2 6.58 2 11c0 2.82 1.83 5.3 4.62 6.64l-.94 3.49c-.08.31.25.57.53.41l4.16-2.43c.53.07 1.07.1 1.63.1 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
-                </svg>
-                <span class="notice-btn-text">카톡 복사</span>
-            </button>
-        </div>
-    </div>
-</div>
-    
-<script>
-function openChannelTalk() {
-    if (window.ChannelIO) {
-        window.ChannelIO('showMessenger');
+  /* 멘트 영역 */
+  .bottom-bar-msg {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .bottom-bar-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .bottom-bar-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .bottom-bar-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #dc2626; /* 레드 */
+    line-height: 1.3;
+  }
+
+  .bottom-bar-desc {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.3;
+  }
+
+  .bottom-bar-desc strong {
+    color: #111827;
+    background-color: #fef08a;
+    padding: 1px 4px;
+    border-radius: 4px;
+  }
+
+  /* 버튼 영역 */
+  .bottom-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .bar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .bar-btn:active {
+    transform: scale(0.96);
+  }
+
+  /* 1. 실시간 상담 버튼 */
+  .btn-channel-live {
+    background-color: #4f46e5;
+    color: #ffffff;
+  }
+  .btn-channel-live:hover {
+    background-color: #4338ca;
+  }
+  .btn-channel-live svg {
+    width: 16px;
+    height: 16px;
+    fill: #ffffff;
+  }
+
+  /* 2. 카톡 복사 버튼 */
+  .btn-kakao-copy {
+    background-color: #fee500;
+    color: #191919;
+  }
+  .btn-kakao-copy:hover {
+    background-color: #fdd800;
+  }
+  .btn-kakao-copy svg {
+    width: 16px;
+    height: 16px;
+    fill: #191919;
+  }
+
+  /* 복사 완료 시 적용될 스타일 */
+  .btn-kakao-copy.copied {
+    background-color: #10b981 !important;
+    color: #ffffff !important;
+  }
+  .btn-kakao-copy.copied svg {
+    fill: #ffffff !important;
+  }
+
+  /* 모바일 화면 반응형 대응 */
+  @media (max-width: 768px) {
+    .fixed-bottom-bar {
+      padding: 10px 14px;
     }
-}
+    .bottom-bar-inner {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .bottom-bar-msg {
+      text-align: left;
+    }
+    .bottom-bar-title {
+      font-size: 14px;
+    }
+    .bottom-bar-desc {
+      font-size: 12px;
+    }
+    .bottom-bar-actions {
+      display: flex;
+      width: 100%;
+    }
+    .bar-btn {
+      flex: 1;
+      height: 38px;
+      font-size: 13px;
+      padding: 0 8px;
+    }
+  }
+</style>
 
-function copyNoticeKakaoId(btn) {
+<div class="fixed-bottom-bar">
+  <div class="bottom-bar-inner">
+    <!-- 점검 및 문의 멘트 -->
+    <div class="bottom-bar-msg">
+      <span class="bottom-bar-icon">⚠️</span>
+      <div class="bottom-bar-text">
+        <span class="bottom-bar-title">현재 주문 작성 시스템 점검 중입니다.</span>
+        <span class="bottom-bar-desc">사이트의 <strong>실시간 상담</strong> 혹은 카톡 아이디 <strong>haru5432</strong> 로 문의주세요.</span>
+      </div>
+    </div>
+
+    <!-- 액션 버튼 (상담 / 복사) -->
+    <div class="bottom-bar-actions">
+      <!-- 실시간 상담 버튼 -->
+      <button type="button" class="bar-btn btn-channel-live" onclick="openChannelTalk()">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3C6.48 3 2 6.94 2 11.8c0 2.76 1.44 5.23 3.7 6.78-.17 1.25-.76 2.87-1.8 3.82-.24.22-.09.62.24.59 2.45-.2 4.62-1.28 5.86-2.19.64.13 1.31.2 2 .2 5.52 0 10-3.94 10-8.8S17.52 3 12 3zm-2.5 9.8c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm5 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+        </svg>
+        <span>실시간 상담</span>
+      </button>
+
+      <!-- 카톡 ID 복사 버튼 -->
+      <button type="button" class="bar-btn btn-kakao-copy" onclick="copyBottomKakaoId(this)">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3C6.48 3 2 6.58 2 11c0 2.82 1.83 5.3 4.62 6.64l-.94 3.49c-.08.31.25.57.53.41l4.16-2.43c.53.07 1.07.1 1.63.1 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+        </svg>
+        <span class="kakao-btn-text">카톡 ID 복사</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     기능 스크립트 (클립보드 복사 + 채널톡 연동)
+     ======================================================== -->
+<script>
+  // 1. 실시간 상담 버튼 클릭 시 채널톡 창 열기
+  function openChannelTalk() {
+    if (window.ChannelIO) {
+      window.ChannelIO('showMessenger');
+    }
+  }
+
+  // 2. 카카오톡 ID 복사 및 버튼 피드백
+  function copyBottomKakaoId(btn) {
     var kakaoId = 'haru5432';
-    var textSpan = btn.querySelector('.notice-btn-text');
-    var originalText = textSpan ? textSpan.innerText : '카톡 복사';
+    var textSpan = btn.querySelector('.kakao-btn-text');
+    var originalText = textSpan ? textSpan.innerText : '카톡 ID 복사';
 
     function onSuccess() {
-        if (textSpan) textSpan.innerText = '✓ 복사 완료!';
-        btn.classList.remove('bg-[#FEE500]', 'hover:bg-[#FDD800]', 'text-[#191919]');
-        btn.classList.add('bg-emerald-500', 'text-white');
+      if (textSpan) textSpan.innerText = '✓ 복사 완료!';
+      btn.classList.add('copied');
 
-        setTimeout(function() {
-            if (textSpan) textSpan.innerText = originalText;
-            btn.classList.remove('bg-emerald-500', 'text-white');
-            btn.classList.add('bg-[#FEE500]', 'hover:bg-[#FDD800]', 'text-[#191919]');
-        }, 2000);
+      setTimeout(function() {
+        if (textSpan) textSpan.innerText = originalText;
+        btn.classList.remove('copied');
+      }, 2000);
     }
 
     if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(kakaoId).then(onSuccess).catch(function() {
-            fallbackCopy(kakaoId, onSuccess);
-        });
-    } else {
+      navigator.clipboard.writeText(kakaoId).then(onSuccess).catch(function() {
         fallbackCopy(kakaoId, onSuccess);
+      });
+    } else {
+      fallbackCopy(kakaoId, onSuccess);
     }
-}
+  }
 
-function fallbackCopy(text, callback) {
+  function fallbackCopy(text, callback) {
     var textArea = document.createElement("textarea");
     textArea.value = text;
     textArea.style.position = "fixed";
@@ -812,7 +972,20 @@ function fallbackCopy(text, callback) {
     try { document.execCommand('copy'); } catch(e) {}
     document.body.removeChild(textArea);
     if (callback) callback();
-}
+  }
 </script>
+
+<!-- ========================================================
+     채널톡 SDK 스크립트 (기본 우측하단 원형 버튼 숨김 적용)
+     ======================================================== -->
+<script>
+  (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+
+  ChannelIO('boot', {
+    "pluginKey": "1cb40581-b6e8-4715-9bb2-7934a6ad432c",
+    "hideChannelButtonOnBoot": true /* 하단 바와 겹치지 않도록 채널톡 기본 동그라미 버튼을 숨김 */
+  });
+</script>
+    
 </body>
 </html>
