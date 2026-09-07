@@ -679,11 +679,13 @@
                 </p>
             </div>
             
-            <!-- 선택 상품 정보 표시 영역 -->
+            <!-- 선택 상품 정보 표시 영역 (제품명과 가격을 한 줄로 배치) -->
             <div id="singleProductInfo" class="mb-5 bg-slate-50 p-4 rounded-xl border border-slate-200 hidden">
                 <p class="text-xs text-slate-500 font-bold uppercase mb-1">선택 상품</p>
-                <p id="selectedProductText" class="text-base font-extrabold text-slate-900 leading-tight"></p>
-                <p id="selectedProductPrice" class="text-blue-600 font-black text-lg mt-1"></p>
+                <div class="flex items-center justify-between gap-2 mt-1">
+                    <span id="selectedProductText" class="text-base font-extrabold text-slate-900 leading-tight"></span>
+                    <span id="selectedProductPrice" class="text-blue-600 font-black text-lg flex-shrink-0"></span>
+                </div>
             </div>
 
             <!-- 주문서 양식 폼 -->
@@ -706,7 +708,6 @@
                     <label for="userPhone" class="block text-sm font-bold text-gray-700">연락처 <span class="text-red-500">*</span></label>
                     <input type="tel" id="userPhone" name="userPhone" placeholder="010-0000-0000" maxlength="13" pattern="^010-[0-9]{3,4}-[0-9]{4}$" title="연락처는 무조건 010으로 시작해야 합니다 (010-0000-0000)." oninput="autoHyphenPhone(this)" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors">
                     <p id="phoneErrorMsg" class="text-xs text-rose-600 font-bold hidden mt-1"></p>
-                    <p class="text-[11px] text-slate-400">※ 앞자리는 무조건 010만 입력 가능하며, 다른 번호 입력 시 잘못된 번호로 판단합니다.</p>
                 </div>
                 
                 <div class="space-y-1">
@@ -744,7 +745,7 @@
     <!-- ========================================================
          [화면 하단 고정] 실시간 상담 + 카톡 오픈채팅 통합 바
          ======================================================== -->
-    <div class="fixed-bottom-bar">
+    <div id="fixedBottomBar" class="fixed-bottom-bar">
         <div class="bottom-bar-inner">
             <!-- 문의 안내 멘트 (수정 완료) -->
             <div class="bottom-bar-msg">
@@ -938,12 +939,20 @@
             modal.classList.remove("hidden");
             modal.classList.add("flex");
             document.body.style.overflow = "hidden";
+
+            // 팝업 표시 시 하단 고정 바 숨김 (주문 접수 버튼 가림 방지)
+            const bottomBar = document.getElementById("fixedBottomBar");
+            if (bottomBar) bottomBar.style.display = "none";
         }
 
         function closeModal() {
             modal.classList.add("hidden");
             modal.classList.remove("flex");
             document.body.style.overflow = "auto";
+
+            // 팝업 닫힐 시 하단 고정 바 다시 표시
+            const bottomBar = document.getElementById("fixedBottomBar");
+            if (bottomBar) bottomBar.style.display = "";
         }
 
         if (modal) {
