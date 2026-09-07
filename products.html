@@ -525,7 +525,7 @@
                 
                 <div class="space-y-1">
                     <label for="userMemo" class="block text-sm font-bold text-gray-700">요청 및 메모사항</label>
-                    <textarea id="userMemo" name="userMemo" rows="2" placeholder="예: 배송 전 연락주세요 / 카톡 ID: mykakao123" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors resize-none"></textarea>
+                    <textarea id="userMemo" name="userMemo" rows="2" placeholder="배송 전 연락주세요. (카톡 번호 검색 안 될 시 카톡 ID 기재)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors resize-none"></textarea>
                 </div>
                 
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold text-lg py-4 rounded-lg hover:bg-blue-700 transition-all shadow-md mt-4">
@@ -685,7 +685,7 @@
             document.body.style.overflow = "auto";
         }
 
-        // 5. 텔레그램 연동 Submit
+        // 5. 텔레그램 연동 Submit (CORS 우회 적용)
         async function submitOrder(event) {
             event.preventDefault();
             
@@ -709,9 +709,9 @@
                 productInfo = `${singleText.innerText} (${singlePrice.innerText})`;
             }
 
+            // 전송할 텍스트 조합
             const messageText = `${productInfo} | ${userName} | ${userPhone} | ${userAddress} | ${userMemo} | 천사약국`;
 
-            // 🚨 봇 토큰과 챗 아이디 수정 부분
             const botToken = "8818199189:AAGup-iHBjOrMZ1ajQAG2iR7DoOtqdl8GvY";
             const chatId = "7774402153";
             const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
@@ -722,10 +722,11 @@
             submitBtn.disabled = true;
 
             try {
+                // JSON 방식이 아닌 폼 데이터 방식으로 변경하여 브라우저 로컬 차단(CORS) 우회
                 const response = await fetch(telegramUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: chatId, text: messageText })
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ chat_id: chatId, text: messageText })
                 });
 
                 if (response.ok) {
@@ -734,10 +735,12 @@
                     document.body.style.overflow = "hidden";
                     event.target.reset();
                 } else {
-                    alert("알림 전송에 실패했습니다. 카카오톡으로 문의해주세요.");
+                    const errData = await response.json();
+                    alert(`전송 실패 (오류 내용: ${errData.description})`);
                 }
             } catch (error) {
-                alert("통신 오류가 발생했습니다.");
+                console.error("통신 오류 상세:", error);
+                alert("여전히 통신 오류가 발생합니다. 이 파일을 실제 웹 서버(호스팅)에 업로드하신 뒤 테스트해주세요.");
             } finally {
                 submitBtn.innerText = originalBtnText;
                 submitBtn.disabled = false;
