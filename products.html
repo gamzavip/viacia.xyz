@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>정품 비아그라 시알리스 전체 제품 안내 - 천사약국</title>
+    <title>전체 제품 안내 - 천사약국</title>
     <meta name="description" content="천사약국에서 취급하는 100% 정품 남성정력제, 조루제품, 여성흥분제 전체 카탈로그를 확인하세요. 확실한 효과와 비밀 배송을 보장합니다.">
     <meta name="keywords" content="비아그라, 시알리스, 레비트라, 프릴리지, 카마그라, 여성흥분제, 남성정력제, 정품 약국, 천사약국">
     <link rel="canonical" href="https://viacia.xyz/products">
@@ -550,7 +550,7 @@
 
     <!-- 주문 팝업 (모달) -->
     <div id="orderModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden items-center justify-center p-4 transition-opacity">
-        <div class="bg-white rounded-2xl w-full max-w-md p-6 md:p-8 shadow-2xl relative transform transition-all max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6 md:p-8 shadow-2xl relative transform transition-all overflow-y-auto">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 transition-colors focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
@@ -558,7 +558,7 @@
             <div class="bg-red-50 border border-red-100 rounded-lg p-3 mb-5 text-center">
                 <p class="text-sm font-bold text-red-600 mb-1">📢 주문 후 카톡 확인 바랍니다.</p>
                 <p class="text-xs text-red-500">(카톡 추가 가능한 번호로 부탁드립니다.)</p>
-                <p class="text-xs text-gray-600 mt-1">※ 카톡 번호로 검색 안 될 시 메모사항에 카톡 아이디를 남겨주세요.</p>
+              
             </div>
             
             <div id="singleProductInfo" class="mb-5 bg-slate-50 p-4 rounded-xl border border-slate-200 hidden flex items-center justify-between">
@@ -754,36 +754,50 @@
             document.body.style.overflow = "auto";
         }
 
-        // 5. 텔레그램 연동 Submit (CORS 우회 적용)
+        // 5. 텔레그램 연동 Submit (직접 구축한 API 서버 호출 방식)
         async function submitOrder(event) {
             event.preventDefault();
             
             const phoneInput = document.getElementById("userPhone");
-            const phoneVal = phoneInput.value.replace(/[^0-9]/g, '');
-            if (!phoneVal.startsWith("010") || phoneVal.length < 10) {
-                alert("휴대폰 번호를 정확히 입력해주세요. (010으로 시작해야 합니다.)");
+            let phoneVal = phoneInput.value.trim();
+            
+            // [추가된 부분] 사용자가 입력한 값에서 숫자만 추출
+            const rawNumbers = phoneVal.replace(/[^0-9]/g, '');
+
+            // [추가된 부분] 숫자만 11자리이고 010으로 시작하면 자동으로 하이픈(-) 추가
+            if (rawNumbers.length === 11 && rawNumbers.startsWith("010")) {
+                phoneVal = rawNumbers.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+                phoneInput.value = phoneVal; // 화면의 입력창도 하이픈이 들어간 형태로 즉시 변경해 줌
+            }
+            
+            // [수정된 부분] 010-4자리-4자리 형태만 무조건 허용하는 정규식
+            const phoneRegex = /^010-\d{4}-\d{4}$/;
+            
+            if (!phoneRegex.test(phoneVal)) {
+                alert("휴대폰 번호를 정확히 입력해주세요. (예: 010-1234-5678)");
                 phoneInput.focus();
                 return;
             }
 
             const userName = document.getElementById("userName").value;
-            const userPhone = phoneInput.value;
+            const userPhone = phoneVal; // 변환 및 검증이 끝난 완벽한 번호 사용
             const userAddress = document.getElementById("userAddress").value;
             const userMemo = document.getElementById("userMemo").value || "메모 없음";
 
             let productInfo = "";
-            if (!dropdownDiv.classList.contains("hidden")) {
+            if (typeof dropdownDiv !== 'undefined' && !dropdownDiv.classList.contains("hidden")) {
                 productInfo = selectBox.options[selectBox.selectedIndex].text;
-            } else {
+            } else if (typeof singleText !== 'undefined' && typeof singlePrice !== 'undefined') {
                 productInfo = `${singleText.innerText} (${singlePrice.innerText})`;
+            } else {
+                productInfo = "상품 정보 없음";
             }
 
-            // 전송할 텍스트 조합
-            const messageText = `${productInfo} | ${userName} | ${userPhone} | ${userAddress} | ${userMemo} | 천사약국`;
+            // [중요 1] 이 스크립트가 적용될 현재 웹사이트의 이름으로 변경하세요
+            const siteName = "천사약국"; 
 
-            const botToken = "8818199189:AAGup-iHBjOrMZ1ajQAG2iR7DoOtqdl8GvY";
-            const chatId = "7774402153";
-            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+            // 1. 방금 Cloudflare에서 복사한 API 주소를 넣어주세요.
+            const myApiUrl = "https://telegram-order-api.2402440676.workers.dev/";
 
             const submitBtn = event.target.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerText;
@@ -791,25 +805,30 @@
             submitBtn.disabled = true;
 
             try {
-                // JSON 방식이 아닌 폼 데이터 방식으로 변경하여 브라우저 로컬 차단(CORS) 우회
-                const response = await fetch(telegramUrl, {
+                const response = await fetch(myApiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ chat_id: chatId, text: messageText })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        productInfo: productInfo,
+                        userName: userName,
+                        userPhone: userPhone,
+                        userAddress: userAddress,
+                        userMemo: userMemo,
+                        siteName: siteName
+                    })
                 });
 
                 if (response.ok) {
-                    closeModal();
-                    customAlert.style.display = "flex";
+                    if (typeof closeModal === 'function') closeModal();
+                    if (typeof customAlert !== 'undefined') customAlert.style.display = "flex";
                     document.body.style.overflow = "hidden";
                     event.target.reset();
                 } else {
-                    const errData = await response.json();
-                    alert(`전송 실패 (오류 내용: ${errData.description})`);
+                    alert("전송 실패 (서버 오류가 발생했습니다.)");
                 }
             } catch (error) {
                 console.error("통신 오류 상세:", error);
-                alert("여전히 통신 오류가 발생합니다. 고객센터로 문의주세요.");
+                alert("통신 오류가 발생했습니다. 고객센터로 문의주세요.");
             } finally {
                 submitBtn.innerText = originalBtnText;
                 submitBtn.disabled = false;
